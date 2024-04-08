@@ -3,7 +3,7 @@ CXXFLAGS = -Wall -Werror
 
 main: src/*
 	cd target/obj && $(CXX) $(CXXFLAGS) -c ../../src/main.cpp
-	$(CXX) $(CXXFLAGS) -o target/main target/obj/main.o
+	$(CXX) $(CXXFLAGS) -o target/ccreate target/obj/main.o
 
-run: target/main
-	./target/main
+run: target/ccreate
+	./target/ccreate

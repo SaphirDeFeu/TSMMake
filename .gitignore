@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Non-source folders
+target/
+dev/
