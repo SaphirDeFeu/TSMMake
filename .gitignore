@@ -34,3 +34,6 @@
 # Non-source folders
 target/
 dev/
+
+# Editors
+.vscode/
