@@ -9,7 +9,7 @@ using std::string;
 const string VERSION = "1.0.0";
 
 template <typename T>
-bool vectorHasElement(vector<T>* vec, const T& element) {
+bool isElementInVector(vector<T>* vec, const T& element) {
   int len = vec->size();
   for(int i = 0; i < len; i++) {
     if(vec->at(i) == element) {
@@ -49,7 +49,7 @@ void showHelp() {
   std::cout << "Usage: ccreate [options] [command]\n" << std::endl;
   std::cout << "Options:" << std::endl;
   std::cout << "  -h, --help      Display this help message" << std::endl;
-  std::cout << "  -V, --version   Display CCreate's current version" << std::endl;
+  std::cout << "  -V, --version   Display installed version" << std::endl;
   std::cout << "\nCommands:" << std::endl;
   std::cout << "  new             Create a new CCreate project" << std::endl;
   return;
@@ -59,12 +59,12 @@ void showHelp() {
 int main(int argc, char** argv) {
   vector<string> processedArgs = processCLIArguments(argc, argv);
 
-  if(vectorHasElement<string>(&processedArgs, string("-h"))) {
+  if(isElementInVector(&processedArgs, string("-h"))) {
     showHelp();
     return 0;
   }
 
-  if(vectorHasElement<string>(&processedArgs, string("-V"))) {
+  if(isElementInVector(&processedArgs, string("-V"))) {
     std::cout << "ccreate " << VERSION << std::endl;
     return 0;
   }
