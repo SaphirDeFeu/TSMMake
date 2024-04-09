@@ -8,35 +8,49 @@ using std::string;
 
 const string VERSION = "1.0.0";
 
-template <typename T>
-bool isElementInVector(vector<T>* vec, const T& element) {
+struct CLIArgument {
+  string key;
+  string value;
+};
+
+string findValueForKey(vector<CLIArgument>* vec, const string& key) {
   int len = vec->size();
   for(int i = 0; i < len; i++) {
-    if(vec->at(i) == element) {
-      return true;
+    if(vec->at(i).key == key) {
+      return vec->at(i).value;
     }
   }
-  return false;
+  return "";
 }
 
-vector<string> processCLIArguments(const int& argc, char** argv) {
-  vector<string> result = vector<string>();
+
+vector<CLIArgument> processCLIArguments(const int& argc, char** argv) {
+  vector<CLIArgument> result = vector<CLIArgument>();
 
   if(argc == 1) {
-    result.push_back("-h");
+    result.push_back({
+      key: "-h",
+      value: "1",
+    });
   }
 
   for(int i = 0; i < argc; i++) {
     string arg = string(argv[i]);
 
     if(arg == "-h" || arg == "--help") {
-      result.push_back("-h");
-      continue;
+      result.push_back({
+        key: "-h",
+        value: "1",
+      });
+      return result;
     }
 
     if(arg == "-V" || arg == "--version") {
-      result.push_back("-V");
-      continue;
+      result.push_back({
+        key: "-V",
+        value: "1",
+      });
+      return result;
     }
 
   }
@@ -57,14 +71,14 @@ void showHelp() {
 
 
 int main(int argc, char** argv) {
-  vector<string> processedArgs = processCLIArguments(argc, argv);
+  vector<CLIArgument> processedArgs = processCLIArguments(argc, argv);
 
-  if(isElementInVector(&processedArgs, string("-h"))) {
+  if(findValueForKey(&processedArgs, "-h") == "1") {
     showHelp();
     return 0;
   }
 
-  if(isElementInVector(&processedArgs, string("-V"))) {
+  if(findValueForKey(&processedArgs, "-V") == "1") {
     std::cout << "ccreate " << VERSION << std::endl;
     return 0;
   }
