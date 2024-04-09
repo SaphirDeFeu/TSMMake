@@ -1,7 +1,11 @@
 #include<iostream>
 #include<vector>
 #include<string>
+#include<filesystem>
 
+#include"new.cpp"
+
+namespace fs = std::filesystem;
 
 using std::vector;
 using std::string;
@@ -13,7 +17,7 @@ struct CLIArgument {
   string value;
 };
 
-string findValueForKey(vector<CLIArgument>* vec, const string& key) {
+string find_value_for_key(vector<CLIArgument>* vec, const string& key) {
   int len = vec->size();
   for(int i = 0; i < len; i++) {
     if(vec->at(i).key == key) {
@@ -21,10 +25,19 @@ string findValueForKey(vector<CLIArgument>* vec, const string& key) {
     }
   }
   return "";
-}
+};
 
+bool is_key_in_vector(vector<CLIArgument>* vec, const string& key) {
+  int len = vec->size();
+  for(int i = 0; i < len; i++) {
+    if(vec->at(i).key == key) {
+      return true;
+    }
+  }
+  return false;
+};
 
-vector<CLIArgument> processCLIArguments(const int& argc, char** argv) {
+vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
   vector<CLIArgument> result = vector<CLIArgument>();
 
   if(argc == 1) {
@@ -33,8 +46,9 @@ vector<CLIArgument> processCLIArguments(const int& argc, char** argv) {
       value: "1",
     });
   }
-
-  for(int i = 0; i < argc; i++) {
+  
+  int i = 0;
+  while(i < argc) {
     string arg = string(argv[i]);
 
     if(arg == "-h" || arg == "--help") {
@@ -53,6 +67,16 @@ vector<CLIArgument> processCLIArguments(const int& argc, char** argv) {
       return result;
     }
 
+    if(arg == "new") {
+      i++;
+      string val = string(argv[i]);
+      result.push_back({
+        key: ":new",
+        value: val,
+      });
+    }
+
+    i++;
   }
 
   return result;
@@ -67,20 +91,27 @@ void showHelp() {
   std::cout << "\nCommands:" << std::endl;
   std::cout << "  new             Create a new CCreate project" << std::endl;
   return;
-}
+};
 
 
 int main(int argc, char** argv) {
-  vector<CLIArgument> processedArgs = processCLIArguments(argc, argv);
+  vector<CLIArgument> processed_args = process_cli_arguments(argc, argv);
+  fs::path cwd = fs::current_path();
 
-  if(findValueForKey(&processedArgs, "-h") == "1") {
+  // int procargc = processed_args.size();
+
+  if(find_value_for_key(&processed_args, "-h") == "1") {
     showHelp();
     return 0;
   }
 
-  if(findValueForKey(&processedArgs, "-V") == "1") {
+  if(find_value_for_key(&processed_args, "-V") == "1") {
     std::cout << "ccreate " << VERSION << std::endl;
     return 0;
+  }
+
+  if(is_key_in_vector(&processed_args, ":new")) {
+    return create_project(find_value_for_key(&processed_args, ":new"), cwd);
   }
 
   return 0;
