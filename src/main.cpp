@@ -4,6 +4,7 @@
 #include<filesystem>
 
 #include"new.h"
+#include"build/mod.h"
 
 using std::vector;
 using std::string;
@@ -73,6 +74,13 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
       });
     }
 
+    if(arg == "build") {
+      result.push_back({
+        key: ":build",
+        value: "1",
+      });
+    }
+
     i++;
   }
 
@@ -95,18 +103,22 @@ int main(int argc, char** argv) {
   vector<CLIArgument> processed_args = process_cli_arguments(argc, argv);
   std::filesystem::path cwd = std::filesystem::current_path();
 
-  if(get_value_for_key(&processed_args, "-h") == "1") {
+  if(is_key_in_vector(&processed_args, "-h")) {
     showHelp();
     return 0;
   }
 
-  if(get_value_for_key(&processed_args, "-V") == "1") {
+  if(is_key_in_vector(&processed_args, "-V")) {
     std::cout << "ccreate " << VERSION << std::endl;
     return 0;
   }
 
   if(is_key_in_vector(&processed_args, ":new")) {
     return create_project(get_value_for_key(&processed_args, ":new"), cwd);
+  }
+
+  if(is_key_in_vector(&processed_args, ":build")) {
+    return build_project(cwd);
   }
 
   return 0;
