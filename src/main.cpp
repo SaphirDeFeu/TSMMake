@@ -3,9 +3,7 @@
 #include<string>
 #include<filesystem>
 
-#include"new.cpp"
-
-namespace fs = std::filesystem;
+#include"new.h"
 
 using std::vector;
 using std::string;
@@ -17,7 +15,7 @@ struct CLIArgument {
   string value;
 };
 
-string find_value_for_key(vector<CLIArgument>* vec, const string& key) {
+string get_value_for_key(vector<CLIArgument>* vec, const string& key) {
   int len = vec->size();
   for(int i = 0; i < len; i++) {
     if(vec->at(i).key == key) {
@@ -68,8 +66,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     }
 
     if(arg == "new") {
-      i++;
-      string val = string(argv[i]);
+      string val = string(argv[++i]);
       result.push_back({
         key: ":new",
         value: val,
@@ -96,22 +93,20 @@ void showHelp() {
 
 int main(int argc, char** argv) {
   vector<CLIArgument> processed_args = process_cli_arguments(argc, argv);
-  fs::path cwd = fs::current_path();
+  std::filesystem::path cwd = std::filesystem::current_path();
 
-  // int procargc = processed_args.size();
-
-  if(find_value_for_key(&processed_args, "-h") == "1") {
+  if(get_value_for_key(&processed_args, "-h") == "1") {
     showHelp();
     return 0;
   }
 
-  if(find_value_for_key(&processed_args, "-V") == "1") {
+  if(get_value_for_key(&processed_args, "-V") == "1") {
     std::cout << "ccreate " << VERSION << std::endl;
     return 0;
   }
 
   if(is_key_in_vector(&processed_args, ":new")) {
-    return create_project(find_value_for_key(&processed_args, ":new"), cwd);
+    return create_project(get_value_for_key(&processed_args, ":new"), cwd);
   }
 
   return 0;
