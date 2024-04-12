@@ -4,7 +4,7 @@
 #include<vector>
 #include<fstream>
 
-#include"build/mod.h"
+#include"build/mod.hpp"
 #include"toml.hpp"
 
 using std::string;

@@ -3,8 +3,8 @@
 #include<string>
 #include<filesystem>
 
-#include"new.h"
-#include"build/mod.h"
+#include"new.hpp"
+#include"build/mod.hpp"
 
 using std::vector;
 using std::string;

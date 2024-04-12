@@ -1,5 +1,5 @@
-#ifndef BUILD_MOD_H
-#define BUILD_MOD_H
+#ifndef BUILD_MOD_HPP
+#define BUILD_MOD_HPP
 
 #include<filesystem>
 

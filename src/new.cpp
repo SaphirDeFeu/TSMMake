@@ -3,7 +3,7 @@
 #include<string>
 #include<fstream>
 
-#include"new.h"
+#include"new.hpp"
 
 using std::string;
 using std::ofstream;

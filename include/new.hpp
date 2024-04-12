@@ -1,5 +1,5 @@
-#ifndef NEW_H
-#define NEW_H
+#ifndef NEW_HPP
+#define NEW_HPP
 
 #include<string>
 #include<filesystem>
