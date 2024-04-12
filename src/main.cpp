@@ -53,7 +53,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     if(arg == "-h" || arg == "--help") {
       result.push_back({
         key: "-h",
-        value: "1",
+        value: "",
       });
       return result;
     }
@@ -61,7 +61,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     if(arg == "-V" || arg == "--version") {
       result.push_back({
         key: "-V",
-        value: "1",
+        value: "",
       });
       return result;
     }
@@ -77,7 +77,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     if(arg == "build") {
       result.push_back({
         key: ":build",
-        value: "1",
+        value: "",
       });
     }
 
