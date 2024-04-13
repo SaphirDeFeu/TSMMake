@@ -14,17 +14,17 @@ const string VERSION = "1.0.0";
 
 struct CLIArgument {
   string key;
-  string value;
+  vector<string> value;
 };
 
-string get_value_for_key(vector<CLIArgument>* vec, const string& key) {
+vector<string> get_value_for_key(vector<CLIArgument>* vec, const string& key) {
   int len = vec->size();
   for(int i = 0; i < len; i++) {
     if(vec->at(i).key == key) {
       return vec->at(i).value;
     }
   }
-  return "";
+  return vector<string>();
 };
 
 bool is_key_in_vector(vector<CLIArgument>* vec, const string& key) {
@@ -43,7 +43,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
   if(argc == 1) {
     result.push_back({
       key: "-h",
-      value: "1",
+      value: vector<string>(),
     });
   }
   
@@ -54,7 +54,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     if(arg == "-h" || arg == "--help") {
       result.push_back({
         key: "-h",
-        value: "",
+        value: vector<string>(),
       });
       return result;
     }
@@ -62,7 +62,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     if(arg == "-V" || arg == "--version") {
       result.push_back({
         key: "-V",
-        value: "",
+        value: vector<string>(),
       });
       return result;
     }
@@ -71,21 +71,21 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
       string val = string(argv[++i]);
       result.push_back({
         key: ":new",
-        value: val,
+        value: vector<string>({val}),
       });
     }
 
     if(arg == "build") {
       result.push_back({
         key: ":build",
-        value: "",
+        value: vector<string>(),
       });
     }
 
     if(arg == "run") {
       result.push_back({
         key: ":run",
-        value: "",
+        value: vector<string>(),
       });
     }
 
@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
   }
 
   if(is_key_in_vector(&processed_args, ":new")) {
-    return create_project(get_value_for_key(&processed_args, ":new"), cwd);
+    return create_project(get_value_for_key(&processed_args, ":new")[0], cwd);
   }
 
   if(is_key_in_vector(&processed_args, ":build")) {
