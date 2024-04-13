@@ -44,7 +44,7 @@ int create_project(const string& name, const std::filesystem::path& cwd) {
   string ccreate_toml = "[project]\nname = \"" + name + "\"\nversion = \"1.0.0\"\nlang = \"cpp\"\ncompiler = \"g++\"\n\n[dependencies]\n\n";
   create_and_write_file(project_path / "CCreate.toml", ccreate_toml);
 
-  string main_cpp = "#include<iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n}\n";
+  string main_cpp = "#include<iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}\n";
   create_and_write_file(project_path / "src/main.cpp", main_cpp);
 
   return 0;

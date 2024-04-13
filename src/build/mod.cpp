@@ -116,7 +116,7 @@ int build_project(const std::filesystem::path& cwd) {
     system(command.c_str());
   }
 
-  string command = "g++ -Wall -o build/" + binary_name;
+  string command = compiler + " -Wall -o build/" + binary_name;
   for(const string& path : object_files) {
     command += " " + path;
   }
