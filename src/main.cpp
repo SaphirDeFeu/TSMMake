@@ -5,6 +5,7 @@
 
 #include"new.hpp"
 #include"build/mod.hpp"
+#include"build/run.hpp"
 
 using std::vector;
 using std::string;
@@ -81,6 +82,13 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
       });
     }
 
+    if(arg == "run") {
+      result.push_back({
+        key: ":run",
+        value: "",
+      });
+    }
+
     i++;
   }
 
@@ -95,6 +103,8 @@ void showHelp() {
   std::cout << "  -V, --version   Display installed version" << std::endl;
   std::cout << "\nCommands:" << std::endl;
   std::cout << "  new             Create a new CCreate project" << std::endl;
+  std::cout << "  build           Build the current CCreate project" << std::endl;
+  std::cout << "  run             Build and run the current CCreate project" << std::endl;
   return;
 };
 
@@ -119,6 +129,15 @@ int main(int argc, char** argv) {
 
   if(is_key_in_vector(&processed_args, ":build")) {
     return build_project(cwd);
+  }
+
+  if(is_key_in_vector(&processed_args, ":run")) {
+    int build_exit_code = build_project(cwd);
+    if(build_exit_code != 0) {
+      return build_exit_code;
+    }
+    
+    return run_project(cwd);
   }
 
   return 0;

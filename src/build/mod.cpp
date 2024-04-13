@@ -66,13 +66,8 @@ int build_project(const std::filesystem::path& cwd) {
   config_file.close();
 
   if(!std::filesystem::exists(cwd / "build")) {
-    if(!std::filesystem::create_directory(cwd / "build")) {
+    if(!std::filesystem::create_directories(cwd / "build/src")) {
       std::cerr << "Could not create a build folder for the project" << std::endl;
-      return 1;
-    }
-
-    if(!std::filesystem::create_directory(cwd / "build/src")) {
-      std::cerr << "Could not create a build/src folder for the project" << std::endl;
       return 1;
     }
   }
