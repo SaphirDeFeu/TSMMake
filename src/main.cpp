@@ -96,7 +96,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
 };
 
 void showHelp() {
-  std::cout << "CCreate - C/C++ Package manager and build system - by TSMStudios\n" << std::endl;
+  std::cout << "CCreate - C/C++ Package manager and build tool - by TSMStudios\n" << std::endl;
   std::cout << "Usage: ccreate [options] [command]\n" << std::endl;
   std::cout << "Options:" << std::endl;
   std::cout << "  -h, --help      Display this help message" << std::endl;
