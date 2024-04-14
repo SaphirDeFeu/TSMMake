@@ -12,7 +12,7 @@ using std::vector;
 int run_project(const std::filesystem::path& cwd, vector<string> program_arguments, bool is_quiet) {
   // Assume necessary folders and directories exist because this method is run right after build_project (see mod.cpp@build_project)
 
-  const toml::value config = toml::parse(cwd / "CCreate.toml");
+  const toml::value config = toml::parse(cwd / "TSMMake.toml");
   const toml::value project = toml::find<toml::value>(config, "project");
   const string name = toml::find<string>(project, "name");
 

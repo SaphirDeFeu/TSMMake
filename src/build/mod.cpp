@@ -55,14 +55,14 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
   string line;
   vector<string> lines;
 
-  ifstream config_file(cwd / "CCreate.toml");
+  ifstream config_file(cwd / "TSMMake.toml");
 
   if(!config_file.is_open()) {
-    std::cerr << "  \033[91;1mConfiguration error\033[0m: no config file found" << std::endl << "Is CCreate.toml located in the current working directory?";
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no config file found" << std::endl << "Is TSMMake.toml located in the current working directory?";
     return 1;
   }
 
-  const toml::value data = toml::parse(config_file, cwd / "CCreate.toml");
+  const toml::value data = toml::parse(config_file, cwd / "TSMMake.toml");
   config_file.close();
 
   if(!std::filesystem::exists(cwd / "build")) {
@@ -73,7 +73,7 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
   }
 
   if(!data.contains("project")) {
-    std::cerr << "  \033[91;1mConfiguration error\033[0m: no project found" << std::endl << "Is CCreate.toml present and correct?";
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no project found" << std::endl << "Is TSMMake.toml present and correct?";
     return 1;
   }
 
@@ -87,7 +87,7 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
   }
   
   if(!project.contains("compiler")) {
-    std::cerr << "  \033[91;1mConfiguration error\033[0m: no compiler specified" << std::endl << "Is there a compiler field in CCreate.toml?";
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no compiler specified" << std::endl << "Is there a compiler field in TSMMake.toml?";
     return 1;
   }
 

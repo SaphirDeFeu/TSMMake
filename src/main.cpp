@@ -123,16 +123,16 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
 };
 
 void showHelp() {
-  std::cout << "CCreate - C/C++ Package manager and build tool - by TSMStudios\n" << std::endl;
-  std::cout << "Usage: ccreate [options] [command]\n" << std::endl;
+  std::cout << "TSMMake, a C/C++ Package manager and build tool                     by \033[92;1mTSMStudios\033[0m\n" << std::endl;
+  std::cout << "Usage: tsmmake [options] [command]\n" << std::endl;
   std::cout << "Options:" << std::endl;
   std::cout << "  -h, --help      Display this help message" << std::endl;
   std::cout << "  -V, --version   Display installed version" << std::endl;
-  std::cout << "  -q, --quiet     Disables CCreate info lines from logging" << std::endl;
+  std::cout << "  -q, --quiet     Disables TSMMake info lines from logging" << std::endl;
   std::cout << "\nCommands:" << std::endl;
-  std::cout << "  new             Create a new CCreate project" << std::endl;
-  std::cout << "  build           Build the current CCreate project" << std::endl;
-  std::cout << "  run             Build and run the current CCreate project" << std::endl;
+  std::cout << "  new             Create a new TSMMake project" << std::endl;
+  std::cout << "  build           Build the current TSMMake project" << std::endl;
+  std::cout << "  run             Build and run the current TSMMake project" << std::endl;
   return;
 };
 
@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
   }
 
   if(is_key_in_vector(&processed_args, "-V")) {
-    std::cout << "ccreate " << VERSION << std::endl;
+    std::cout << "TSMMake " << VERSION << std::endl;
     return 0;
   }
 
@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
   if(is_key_in_vector(&processed_args, ":new")) {
     optional<vector<string>> arg_value = get_value_for_key(&processed_args, ":new");
     if(!arg_value.has_value()) {
-      std::cerr << "  \033[91;1mSystem error\033[0m: no name provided for CCreate project" << std::endl;
+      std::cerr << "  \033[91;1mSystem error\033[0m: no name provided for TSMMake project" << std::endl;
       return 1;
     }
     string name = arg_value.value()[0];
