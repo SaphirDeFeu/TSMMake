@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
   if(is_key_in_vector(&processed_args, ":new")) {
     optional<vector<string>> arg_value = get_value_for_key(&processed_args, ":new");
     if(!arg_value.has_value()) {
-      std::cerr << "Could not create CCreate project because no name was provided" << std::endl;
+      std::cerr << "  \033[91;1mSystem error\033[0m: no name provided for CCreate project" << std::endl;
       return 1;
     }
     string name = arg_value.value()[0];

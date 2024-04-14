@@ -9,10 +9,11 @@ using std::string;
 using std::ofstream;
 
 void create_and_write_file(const std::filesystem::path& path, const string& data) {
+
   ofstream file(path.c_str());
 
   if(!file.is_open()) {
-    std::cerr << "Failed to create CCreate config file (you can still create the file yourself)" << std::endl;
+    std::cerr << "  \033[93;1mSystem warn\033[0m: file " << path << " failed to be created" << std::endl << "You can write the file yourself" << std::endl;
     return;
   }
 
@@ -24,20 +25,15 @@ void create_and_write_file(const std::filesystem::path& path, const string& data
 
 int create_project(const string& name, const std::filesystem::path& cwd) {
   std::filesystem::path project_path = cwd / name;
+  std::cerr << "  \033[92;1mCreating\033[0m \"" << name << "\" (C++ project) at " << project_path << std::endl;
   
   if(std::filesystem::exists(project_path)) {
-    std::cerr << "Could not create new CCreate project at " << project_path.c_str() << " because the folder already exists." << std::endl;
+    std::cerr << "  \033[91;1mSystem error\033[0m: folder " << project_path << " already exists" << std::endl;
     return 1;
   }
 
-  std::cout << "Creating new CCreate project at " << project_path.c_str() << std::endl;
-  if(!std::filesystem::create_directory(project_path)) {
-    std::cerr << "Failed creating root folder of CCreate project, aborting process." << std::endl;
-    return 1;
-  }
-
-  if(!std::filesystem::create_directory(project_path / "src")) {
-    std::cerr << "Failed creating src folder of CCreate project, aborting process." << std::endl;
+  if(!std::filesystem::create_directories(project_path / "src")) {
+    std::cerr << "  \033[91;1mSystem error\033[0m: folders for project " << project_path << " cannot be created" << std::endl;
     return 1;
   }
 

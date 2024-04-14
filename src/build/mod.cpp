@@ -46,7 +46,7 @@ void create_folders_for_path(const string& absolute_path) {
 
   if(!std::filesystem::exists(parent_path)) {
     if(!std::filesystem::create_directories(parent_path)) {
-      std::cerr << "Error creating directories up to " << parent_path << std::endl;
+      std::cerr << "  \033[91;1mSystem error\033[0m: directories up to " << parent_path << " cannot be created" << std::endl;
     }
   }
 }
@@ -58,7 +58,7 @@ int build_project(const std::filesystem::path& cwd) {
   ifstream config_file(cwd / "CCreate.toml");
 
   if(!config_file.is_open()) {
-    std::cerr << "Could not build project because CCreate.toml cannot be found." << std::endl;
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no config file found" << std::endl << "Is CCreate.toml located in the current working directory?";
     return 1;
   }
 
@@ -67,13 +67,13 @@ int build_project(const std::filesystem::path& cwd) {
 
   if(!std::filesystem::exists(cwd / "build")) {
     if(!std::filesystem::create_directories(cwd / "build/src")) {
-      std::cerr << "Could not create a build folder for the project" << std::endl;
+      std::cerr << "  \033[91;1mSystem error\033[0m: build directory cannot be created" << std::endl;
       return 1;
     }
   }
 
   if(!data.contains("project")) {
-    std::cerr << "No project data in CCreate.toml, aborting." << std::endl;
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no project found" << std::endl << "Is CCreate.toml present and correct?";
     return 1;
   }
 
@@ -87,7 +87,7 @@ int build_project(const std::filesystem::path& cwd) {
   }
   
   if(!project.contains("compiler")) {
-    std::cerr << "No compiler specified, aborting." << std::endl;
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no compiler specified" << std::endl << "Is there a compiler field in CCreate.toml?";
     return 1;
   }
 
@@ -96,6 +96,9 @@ int build_project(const std::filesystem::path& cwd) {
   vector<string> source_files = scan_dir((cwd / "src").string());
   vector<string> object_files;
   for(const string& path : source_files) {
+    std::filesystem::path path_as_fspath(path);
+    std::cout << "  \033[92;1mCompiling\033[0m " << path_as_fspath << std::endl;
+
     string obj_path = replace_ext(path, "o");
     string toReplace = "src";
     size_t pos = obj_path.find(toReplace);
@@ -106,19 +109,28 @@ int build_project(const std::filesystem::path& cwd) {
     create_folders_for_path(obj_path);
 
     string command = compiler + " -Wall -c " + path + " -o " + obj_path;
-    std::cout << "  \033[92;1mCompiling\033[0m " << path << std::endl;
-
-    system(command.c_str());
+    int exit_code = system(command.c_str());
+    if(exit_code != 0) {
+      std::cerr << "  \033[91;1mCompilation error\033[0m: could not compile" << path_as_fspath << std::endl;
+      return exit_code;
+    }
   }
 
-  string command = compiler + " -Wall -o build/" + binary_name;
+  string full_path = (cwd / "build" / binary_name).string();
+  std::filesystem::path full_path_as_fspath(full_path);
+  string command = compiler + " -Wall -o " + full_path;
   for(const string& path : object_files) {
     command += " " + path;
   }
 
-  std::cout << "  \033[92;1mCompiling\033[0m " << (cwd / "build" / binary_name).string() << std::endl;
-  system(command.c_str());
-  std::cout << "  \033[92;1mFinished\033[0m" << std::endl;
+  std::cout << "  \033[92;1mCompiling\033[0m " << full_path_as_fspath << std::endl;
+  int exit_code = system(command.c_str());
+  if(exit_code != 0) {
+    std::cerr << "  \033[91;1mCompilation error\033[0m: could not compile " << full_path_as_fspath << std::endl;
+    return exit_code;
+  }
+
+  std::cout << "  \033[92;1mFinishing\033[0m" << std::endl;
 
   return 0;
 }
