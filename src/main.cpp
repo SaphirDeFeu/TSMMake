@@ -123,8 +123,8 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
 };
 
 void showHelp() {
-  std::cout << "CCreate - C/C++ Package manager and build tool - by TSMStudios\n" << std::endl;
-  std::cout << "Usage: ccreate [options] [command]\n" << std::endl;
+  std::cout << "TSMMake, a C/C++ Package manager and build tool                     by \033[92;1mTSMStudios\033[0m\n" << std::endl;
+  std::cout << "Usage: tsmmake [options] [command]\n" << std::endl;
   std::cout << "Options:" << std::endl;
   std::cout << "  -h, --help      Display this help message" << std::endl;
   std::cout << "  -V, --version   Display installed version" << std::endl;
