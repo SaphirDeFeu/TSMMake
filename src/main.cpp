@@ -69,6 +69,13 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
       return result;
     }
 
+    if(arg == "-q" || arg == "--quiet") {
+      result.push_back({
+        key: "-q",
+        value: {},
+      });
+    }
+
     if(arg == "new") {
       if(++i >= argc) {
         result.push_back({
@@ -110,6 +117,7 @@ void showHelp() {
   std::cout << "Options:" << std::endl;
   std::cout << "  -h, --help      Display this help message" << std::endl;
   std::cout << "  -V, --version   Display installed version" << std::endl;
+  std::cout << "  -q, --quiet     Disables CCreate info lines from logging" << std::endl;
   std::cout << "\nCommands:" << std::endl;
   std::cout << "  new             Create a new CCreate project" << std::endl;
   std::cout << "  build           Build the current CCreate project" << std::endl;
@@ -132,6 +140,8 @@ int main(int argc, char** argv) {
     return 0;
   }
 
+  bool quiet = is_key_in_vector(&processed_args, "-q");
+
   if(is_key_in_vector(&processed_args, ":new")) {
     optional<vector<string>> arg_value = get_value_for_key(&processed_args, ":new");
     if(!arg_value.has_value()) {
@@ -139,20 +149,20 @@ int main(int argc, char** argv) {
       return 1;
     }
     string name = arg_value.value()[0];
-    return create_project(name, cwd);
+    return create_project(name, cwd, quiet);
   }
 
   if(is_key_in_vector(&processed_args, ":build")) {
-    return build_project(cwd);
+    return build_project(cwd, quiet);
   }
 
   if(is_key_in_vector(&processed_args, ":run")) {
-    int build_exit_code = build_project(cwd);
+    int build_exit_code = build_project(cwd, quiet);
     if(build_exit_code != 0) {
       return build_exit_code;
     }
     
-    return run_project(cwd);
+    return run_project(cwd, quiet);
   }
 
   return 0;

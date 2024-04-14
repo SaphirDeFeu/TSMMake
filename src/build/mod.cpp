@@ -51,7 +51,7 @@ void create_folders_for_path(const string& absolute_path) {
   }
 }
 
-int build_project(const std::filesystem::path& cwd) {
+int build_project(const std::filesystem::path& cwd, bool is_quiet) {
   string line;
   vector<string> lines;
 
@@ -97,7 +97,7 @@ int build_project(const std::filesystem::path& cwd) {
   vector<string> object_files;
   for(const string& path : source_files) {
     std::filesystem::path path_as_fspath(path);
-    std::cout << "  \033[92;1mCompiling\033[0m " << path_as_fspath << std::endl;
+    if(!is_quiet) std::cout << "  \033[92;1mCompiling\033[0m " << path_as_fspath << std::endl;
 
     string obj_path = replace_ext(path, "o");
     string toReplace = "src";
@@ -123,14 +123,14 @@ int build_project(const std::filesystem::path& cwd) {
     command += " " + path;
   }
 
-  std::cout << "  \033[92;1mCompiling\033[0m " << full_path_as_fspath << std::endl;
+  if(!is_quiet) std::cout << "  \033[92;1mCompiling\033[0m " << full_path_as_fspath << std::endl;
   int exit_code = system(command.c_str());
   if(exit_code != 0) {
     std::cerr << "  \033[91;1mCompilation error\033[0m: could not compile " << full_path_as_fspath << std::endl;
     return exit_code;
   }
 
-  std::cout << "  \033[92;1mFinishing\033[0m" << std::endl;
+  if(!is_quiet) std::cout << "  \033[92;1mFinishing\033[0m" << std::endl;
 
   return 0;
 }

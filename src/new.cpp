@@ -23,9 +23,9 @@ void create_and_write_file(const std::filesystem::path& path, const string& data
   return;
 }
 
-int create_project(const string& name, const std::filesystem::path& cwd) {
+int create_project(const string& name, const std::filesystem::path& cwd, bool is_quiet) {
   std::filesystem::path project_path = cwd / name;
-  std::cerr << "  \033[92;1mCreating\033[0m \"" << name << "\" (C++ project) at " << project_path << std::endl;
+  if(!is_quiet) std::cout << "  \033[92;1mCreating\033[0m \"" << name << "\" (C++ project) at " << project_path << std::endl;
   
   if(std::filesystem::exists(project_path)) {
     std::cerr << "  \033[91;1mSystem error\033[0m: folder " << project_path << " already exists" << std::endl;

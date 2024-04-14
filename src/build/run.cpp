@@ -7,7 +7,7 @@
 
 using std::string;
 
-int run_project(const std::filesystem::path& cwd) {
+int run_project(const std::filesystem::path& cwd, bool is_quiet) {
   // Assume necessary folders and directories exist because this method is run right after build_project (see mod.cpp@build_project)
 
   const toml::value config = toml::parse(cwd / "CCreate.toml");
@@ -16,7 +16,7 @@ int run_project(const std::filesystem::path& cwd) {
 
   std::filesystem::path filename = cwd / "build" / name;
 
-  std::cout << "  \033[92;1mRunning\033[0m " << filename << std::endl;
+  if(!is_quiet) std::cout << "  \033[92;1mRunning\033[0m " << filename << std::endl;
   int code = system(filename.c_str());
   return code;
 }
