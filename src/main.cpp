@@ -53,6 +53,10 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
   while(i < argc) {
     string arg = string(argv[i]);
 
+    if(arg == "--") {
+      break;
+    }
+
     if(arg == "-h" || arg == "--help") {
       result.push_back({
         key: "-h",
@@ -99,9 +103,16 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     }
 
     if(arg == "run") {
+      vector<string> program_arguments;
+      bool is_program_arguments = false;
+      for(int j = i; j < argc; j++) {
+        if(is_program_arguments) program_arguments.push_back("\"" + string(argv[j]) + "\"");
+        if(string(argv[j]) == "--") is_program_arguments = true;
+      }
+
       result.push_back({
         key: ":run",
-        value: {},
+        value: program_arguments,
       });
     }
 
@@ -161,8 +172,9 @@ int main(int argc, char** argv) {
     if(build_exit_code != 0) {
       return build_exit_code;
     }
-    
-    return run_project(cwd, quiet);
+
+    vector<string> program_arguments = get_value_for_key(&processed_args, ":run").value();   
+    return run_project(cwd, program_arguments, quiet);
   }
 
   return 0;
