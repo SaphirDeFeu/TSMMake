@@ -70,7 +70,14 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     }
 
     if(arg == "new") {
-      string val = string(argv[++i]);
+      if(++i >= argc) {
+        result.push_back({
+          key: ":new",
+          value: {},
+        });
+        break;
+      }
+      string val = string(argv[i]);
       result.push_back({
         key: ":new",
         value: vector<string>({val}),
