@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<optional>
 #include<string>
 #include<filesystem>
 
@@ -9,22 +10,23 @@
 
 using std::vector;
 using std::string;
+using std::optional;
 
 const string VERSION = "1.0.0";
 
 struct CLIArgument {
   string key;
-  vector<string> value;
+  optional<vector<string>> value;
 };
 
-vector<string> get_value_for_key(vector<CLIArgument>* vec, const string& key) {
+optional<vector<string>> get_value_for_key(vector<CLIArgument>* vec, const string& key) {
   int len = vec->size();
   for(int i = 0; i < len; i++) {
     if(vec->at(i).key == key) {
       return vec->at(i).value;
     }
   }
-  return vector<string>();
+  return {};
 };
 
 bool is_key_in_vector(vector<CLIArgument>* vec, const string& key) {
@@ -43,7 +45,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
   if(argc == 1) {
     result.push_back({
       key: "-h",
-      value: vector<string>(),
+      value: {},
     });
   }
   
@@ -54,7 +56,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     if(arg == "-h" || arg == "--help") {
       result.push_back({
         key: "-h",
-        value: vector<string>(),
+        value: {},
       });
       return result;
     }
@@ -62,7 +64,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     if(arg == "-V" || arg == "--version") {
       result.push_back({
         key: "-V",
-        value: vector<string>(),
+        value: {},
       });
       return result;
     }
@@ -78,14 +80,14 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
     if(arg == "build") {
       result.push_back({
         key: ":build",
-        value: vector<string>(),
+        value: {},
       });
     }
 
     if(arg == "run") {
       result.push_back({
         key: ":run",
-        value: vector<string>(),
+        value: {},
       });
     }
 
@@ -124,7 +126,13 @@ int main(int argc, char** argv) {
   }
 
   if(is_key_in_vector(&processed_args, ":new")) {
-    return create_project(get_value_for_key(&processed_args, ":new")[0], cwd);
+    optional<vector<string>> arg_value = get_value_for_key(&processed_args, ":new");
+    if(!arg_value.has_value()) {
+      std::cerr << "Could not create CCreate project because no name was provided" << std::endl;
+      return 1;
+    }
+    string name = arg_value.value()[0];
+    return create_project(name, cwd);
   }
 
   if(is_key_in_vector(&processed_args, ":build")) {
