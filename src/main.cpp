@@ -5,6 +5,7 @@
 #include<filesystem>
 
 #include"new.hpp"
+#include"help.hpp"
 #include"build/mod.hpp"
 #include"build/run.hpp"
 
@@ -86,7 +87,7 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
           key: ":new",
           value: {},
         });
-        break;
+        continue;
       }
       string val = string(argv[i]);
       result.push_back({
@@ -116,26 +117,26 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
       });
     }
 
+    if(arg == "help") {
+      if(++i >= argc) {
+        result.push_back({
+          key: ":help",
+          value: {},
+        });
+        continue;
+      }
+
+      result.push_back({
+        key: ":help",
+        value: vector<string>({argv[i]}),
+      });
+    }
+
     i++;
   }
 
   return result;
 };
-
-void showHelp() {
-  std::cout << "TSMMake, a C/C++ Package manager and build tool                     by \033[92;1mTSMStudios\033[0m\n" << std::endl;
-  std::cout << "Usage: tsmmake [options] [command]\n" << std::endl;
-  std::cout << "Options:" << std::endl;
-  std::cout << "  -h, --help      Display this help message" << std::endl;
-  std::cout << "  -V, --version   Display installed version" << std::endl;
-  std::cout << "  -q, --quiet     Disables TSMMake info lines from logging" << std::endl;
-  std::cout << "\nCommands:" << std::endl;
-  std::cout << "  new             Create a new TSMMake project" << std::endl;
-  std::cout << "  build           Build the current TSMMake project" << std::endl;
-  std::cout << "  run             Build and run the current TSMMake project" << std::endl;
-  return;
-};
-
 
 int main(int argc, char** argv) {
   vector<CLIArgument> processed_args = process_cli_arguments(argc, argv);
@@ -156,7 +157,7 @@ int main(int argc, char** argv) {
   if(is_key_in_vector(&processed_args, ":new")) {
     optional<vector<string>> arg_value = get_value_for_key(&processed_args, ":new");
     if(!arg_value.has_value()) {
-      std::cerr << "  \033[91;1mSystem error\033[0m: no name provided for TSMMake project" << std::endl;
+      std::cout << "Usage: tsmmake new <project_name>" << std::endl;
       return 1;
     }
     string name = arg_value.value()[0];
@@ -175,6 +176,16 @@ int main(int argc, char** argv) {
 
     vector<string> program_arguments = get_value_for_key(&processed_args, ":run").value();   
     return run_project(cwd, program_arguments, quiet);
+  }
+
+  if(is_key_in_vector(&processed_args, ":help")) {
+    optional<vector<string>> arg_value = get_value_for_key(&processed_args, ":help");
+    if(!arg_value.has_value()) {
+      showHelp();
+      return 0;
+    }
+
+    showHelpForCommand(arg_value.value().at(0));
   }
 
   return 0;
