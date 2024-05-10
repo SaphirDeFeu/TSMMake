@@ -9,4 +9,6 @@ std::string replace_ext(const std::string& path, const std::string& replace);
 
 int build_project(const std::filesystem::path& cwd, bool is_quiet);
 
+int build_dependencies(const std::filesystem::path& cwd, bool is_quiet);
+
 #endif

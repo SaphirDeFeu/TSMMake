@@ -3,6 +3,7 @@
 #include<string>
 #include<vector>
 #include<fstream>
+#include<optional>
 
 #include"build/mod.hpp"
 #include"toml.hpp"
@@ -11,6 +12,7 @@ using std::string;
 using std::vector;
 using std::ifstream;
 using std::ofstream;
+using std::optional;
 
 void delete_carriage_returns(string* text) {
   string toReplace("\r");
@@ -51,30 +53,21 @@ void create_folders_for_path(const string& absolute_path) {
   }
 }
 
-int build_project(const std::filesystem::path& cwd, bool is_quiet) {
-  string line;
-  vector<string> lines;
-
+optional<string> read_config_compiler(const std::filesystem::path& cwd) {
   ifstream config_file(cwd / "TSMMake.toml");
 
   if(!config_file.is_open()) {
     std::cerr << "  \033[91;1mConfiguration error\033[0m: no config file found" << std::endl << "Is TSMMake.toml located in the current working directory?";
-    return 1;
+    return {};
   }
 
   const toml::value data = toml::parse(config_file, cwd / "TSMMake.toml");
   config_file.close();
 
-  if(!std::filesystem::exists(cwd / "build")) {
-    if(!std::filesystem::create_directories(cwd / "build/src")) {
-      std::cerr << "  \033[91;1mSystem error\033[0m: build directory cannot be created" << std::endl;
-      return 1;
-    }
-  }
 
   if(!data.contains("project")) {
     std::cerr << "  \033[91;1mConfiguration error\033[0m: no project found" << std::endl << "Is TSMMake.toml present and correct?";
-    return 1;
+    return {};
   }
 
   const toml::value project = toml::find<toml::value>(data, "project");
@@ -88,13 +81,71 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
   
   if(!project.contains("compiler")) {
     std::cerr << "  \033[91;1mConfiguration error\033[0m: no compiler specified" << std::endl << "Is there a compiler field in TSMMake.toml?";
-    return 1;
+    return {};
   }
 
-  const string compiler = toml::find<string>(project, "compiler");
+  return toml::find<string>(project, "compiler");
+}
 
+optional<string> read_config_name(const std::filesystem::path& cwd) {
+    ifstream config_file(cwd / "TSMMake.toml");
+
+  if(!config_file.is_open()) {
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no config file found" << std::endl << "Is TSMMake.toml located in the current working directory?";
+    return {};
+  }
+
+  const toml::value data = toml::parse(config_file, cwd / "TSMMake.toml");
+  config_file.close();
+
+
+  if(!data.contains("project")) {
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no project found" << std::endl << "Is TSMMake.toml present and correct?";
+    return {};
+  }
+
+  const toml::value project = toml::find<toml::value>(data, "project");
+
+  string binary_name;
+  if(!project.contains("name")) {
+    binary_name = cwd.filename();
+  } else {
+    binary_name = toml::find<string>(project, "name");
+  }
+  
+  if(!project.contains("compiler")) {
+    std::cerr << "  \033[91;1mConfiguration error\033[0m: no compiler specified" << std::endl << "Is there a compiler field in TSMMake.toml?";
+    return {};
+  }
+
+  return toml::find<string>(project, "name");
+}
+
+int build_project(const std::filesystem::path& cwd, bool is_quiet) {
+  string line;
+  vector<string> lines;
+
+  optional<string> optional = read_config_compiler(cwd);
+  if(!optional.has_value()) return 1;
+
+  string compiler = optional.value();
+
+  optional = read_config_name(cwd);
+  if(!optional.has_value()) return 1;
+
+  string binary_name = optional.value();
+
+
+  if(!std::filesystem::exists(cwd / "build")) {
+    if(!std::filesystem::create_directories(cwd / "build/src")) {
+      std::cerr << "  \033[91;1mSystem error\033[0m: build directory cannot be created" << std::endl;
+      return 1;
+    }
+  }
+
+  // Source files to object files
   vector<string> source_files = scan_dir((cwd / "src").string());
-  vector<string> object_files;
+  vector<string> src_obj_files;
   for(const string& path : source_files) {
     std::filesystem::path path_as_fspath(path);
     if(!is_quiet) std::cout << "  \033[92;1mCompiling\033[0m " << path_as_fspath << std::endl;
@@ -104,11 +155,11 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
     size_t pos = obj_path.find(toReplace);
 
     obj_path.replace(pos, toReplace.length(), "build/src");
-    object_files.push_back(obj_path);
+    src_obj_files.push_back(obj_path);
 
     create_folders_for_path(obj_path);
 
-    string command = compiler + " -Wall -c " + path + " -o " + obj_path;
+    string command = compiler + " -Wall -Iinclude -c " + path + " -o " + obj_path;
     int exit_code = system(command.c_str());
     if(exit_code != 0) {
       std::cerr << "  \033[91;1mCompilation error\033[0m: could not compile" << path_as_fspath << std::endl;
@@ -119,7 +170,13 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
   string full_path = (cwd / "build" / binary_name).string();
   std::filesystem::path full_path_as_fspath(full_path);
   string command = compiler + " -Wall -o " + full_path;
-  for(const string& path : object_files) {
+  for(const string& path : src_obj_files) {
+    command += " " + path;
+  }
+
+  const vector<string> dependency_files = scan_dir((cwd / "build/include").string());
+
+  for(const string& path : dependency_files) {
     command += " " + path;
   }
 
@@ -131,6 +188,38 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
   }
 
   if(!is_quiet) std::cout << "  \033[92;1mFinishing\033[0m" << std::endl;
+
+  return 0;
+}
+
+int build_dependencies(const std::filesystem::path& cwd, bool is_quiet) {
+  optional<string> optional = read_config_compiler(cwd);
+  if(!optional.has_value()) return 1;
+
+  string compiler = optional.value();
+
+  vector<string> source_files = scan_dir((cwd / "include").string());
+  vector<string> object_files;
+  for(const string& path : source_files) {
+    std::filesystem::path path_as_fspath(path);
+    if(!is_quiet) std::cout << "  \033[92;1mCompiling\033[0m " << path_as_fspath << std::endl;
+
+    string obj_path = replace_ext(path, "o");
+    string toReplace = "include";
+    size_t pos = obj_path.find(toReplace);
+
+    obj_path.replace(pos, toReplace.length(), "build/include");
+    object_files.push_back(obj_path);
+
+    create_folders_for_path(obj_path);
+
+    string command = compiler + " -Wall -Iinclude -c " + path + " -o " + obj_path;
+    int exit_code = system(command.c_str());
+    if(exit_code != 0) {
+      std::cerr << "  \033[91;1mCompilation error\033[0m: could not compile" << path_as_fspath << std::endl;
+      return exit_code;
+    }
+  }
 
   return 0;
 }

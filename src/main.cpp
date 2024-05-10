@@ -81,6 +81,13 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
       });
     }
 
+    if(arg == "-i" || arg == "--include-deps") {
+      result.push_back({
+        key: "-i",
+        value: {},
+      });
+    }
+
     if(arg == "new") {
       if(++i >= argc) {
         result.push_back({
@@ -162,6 +169,11 @@ int main(int argc, char** argv) {
     }
     string name = arg_value.value()[0];
     return create_project(name, cwd, quiet);
+  }
+
+  if(is_key_in_vector(&processed_args, "-i")) {
+    int exit_code = build_dependencies(cwd, quiet);
+    if(exit_code != 0) return exit_code;
   }
 
   if(is_key_in_vector(&processed_args, ":build")) {
