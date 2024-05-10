@@ -201,6 +201,16 @@ int build_dependencies(const std::filesystem::path& cwd, bool is_quiet) {
   vector<string> source_files = scan_dir((cwd / "include").string());
   vector<string> object_files;
   for(const string& path : source_files) {
+
+    size_t index = path.find_last_of('.');
+
+    if(index != string::npos && index != path.length() - 1) {
+      string ext = path.substr(index + 1);
+
+      if(!(ext == "c" || ext == "cpp")) continue;
+    }
+
+
     std::filesystem::path path_as_fspath(path);
     if(!is_quiet) std::cout << "  \033[92;1mCompiling\033[0m " << path_as_fspath << std::endl;
 
