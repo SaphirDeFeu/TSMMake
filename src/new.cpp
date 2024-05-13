@@ -37,7 +37,7 @@ int create_project(const string& name, const std::filesystem::path& cwd, bool is
     return 1;
   }
 
-  string ccreate_toml = "[project]\nname = \"" + name + "\"\nversion = \"1.0.0\"\nlang = \"cpp\"\ncompiler = \"g++\"\n\n[dependencies]\n\n";
+  string ccreate_toml = "[project]\nname = \"" + name + "\"\nversion = \"1.0.0\"\nlang = \"cpp\"\ncompiler = \"g++\"\ncompiler_flags = \"-Wall\"\n\n";
   create_and_write_file(project_path / "TSMMake.toml", ccreate_toml);
 
   string main_cpp = "#include<iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}\n";

@@ -2,9 +2,10 @@
 #include<string>
 #include<vector>
 #include<filesystem>
+#include<optional>
+#include"parser/mod.hpp"
 
 #include"build/run.hpp"
-#include"toml.hpp"
 
 using std::string;
 using std::vector;
@@ -12,9 +13,9 @@ using std::vector;
 int run_project(const std::filesystem::path& cwd, vector<string> program_arguments, bool is_quiet) {
   // Assume necessary folders and directories exist because this method is run right after build_project (see mod.cpp@build_project)
 
-  const toml::value config = toml::parse(cwd / "TSMMake.toml");
-  const toml::value project = toml::find<toml::value>(config, "project");
-  const string name = toml::find<string>(project, "name");
+  const std::optional<TOML::Configuration> optional = TOML::parse(cwd / "TSMMake.toml");
+  const TOML::Configuration config = optional.value(); // assume okay
+  const string name = config.project.name; // assume okay
 
   std::filesystem::path filename = cwd / "build" / name;
 
