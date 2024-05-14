@@ -13,8 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    # - name: configure
-      # run: ./configure
+    - name: setup
+      run: ./setup.sh
     - name: make
       run: make
     # - name: make check
