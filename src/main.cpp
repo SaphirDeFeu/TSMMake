@@ -21,7 +21,7 @@ struct CLIArgument {
 };
 
 optional<vector<string>> get_value_for_key(vector<CLIArgument>* vec, const string& key) {
-  int len = vec->size();
+  const int len = vec->size();
   for(int i = 0; i < len; i++) {
     if(vec->at(i).key == key) {
       return vec->at(i).value;
@@ -31,7 +31,7 @@ optional<vector<string>> get_value_for_key(vector<CLIArgument>* vec, const strin
 };
 
 bool is_key_in_vector(vector<CLIArgument>* vec, const string& key) {
-  int len = vec->size();
+  const int len = vec->size();
   for(int i = 0; i < len; i++) {
     if(vec->at(i).key == key) {
       return true;
@@ -146,58 +146,58 @@ vector<CLIArgument> process_cli_arguments(const int& argc, char** argv) {
 };
 
 int main(int argc, char** argv) {
-  vector<CLIArgument> processed_args = process_cli_arguments(argc, argv);
+  vector<CLIArgument> processed_arguments = process_cli_arguments(argc, argv);
   std::filesystem::path cwd = std::filesystem::current_path();
 
-  if(is_key_in_vector(&processed_args, "-h")) {
-    showHelp();
+  if(is_key_in_vector(&processed_arguments, "-h")) {
+    show_help();
     return 0;
   }
 
-  if(is_key_in_vector(&processed_args, "-V")) {
+  if(is_key_in_vector(&processed_arguments, "-V")) {
     std::cout << "TSMMake " << VERSION << std::endl;
     return 0;
   }
 
-  bool quiet = is_key_in_vector(&processed_args, "-q");
+  bool quiet_flag_on = is_key_in_vector(&processed_arguments, "-q");
 
-  if(is_key_in_vector(&processed_args, ":new")) {
-    optional<vector<string>> arg_value = get_value_for_key(&processed_args, ":new");
+  if(is_key_in_vector(&processed_arguments, ":new")) {
+    optional<vector<string>> arg_value = get_value_for_key(&processed_arguments, ":new");
     if(!arg_value.has_value()) {
       std::cout << "Usage: tsmmake new <project_name>" << std::endl;
       return 1;
     }
     string name = arg_value.value()[0];
-    return create_project(name, cwd, quiet);
+    return create_project(name, cwd, quiet_flag_on);
   }
 
-  if(is_key_in_vector(&processed_args, "-i")) {
-    int exit_code = build_dependencies(cwd, quiet);
-    if(exit_code != 0) return exit_code;
+  if(is_key_in_vector(&processed_arguments, "-i")) {
+    int dependency_compilation_success = build_dependencies(cwd, quiet_flag_on);
+    if(dependency_compilation_success != 0) return dependency_compilation_success;
   }
 
-  if(is_key_in_vector(&processed_args, ":build")) {
-    return build_project(cwd, quiet);
+  if(is_key_in_vector(&processed_arguments, ":build")) {
+    return build_project(cwd, quiet_flag_on);
   }
 
-  if(is_key_in_vector(&processed_args, ":run")) {
-    int build_exit_code = build_project(cwd, quiet);
-    if(build_exit_code != 0) {
-      return build_exit_code;
+  if(is_key_in_vector(&processed_arguments, ":run")) {
+    int compilation_success = build_project(cwd, quiet_flag_on);
+    if(compilation_success != 0) {
+      return compilation_success;
     }
 
-    vector<string> program_arguments = get_value_for_key(&processed_args, ":run").value();   
-    return run_project(cwd, program_arguments, quiet);
+    const vector<string> program_arguments = get_value_for_key(&processed_arguments, ":run").value();   
+    return run_project(cwd, program_arguments, quiet_flag_on);
   }
 
-  if(is_key_in_vector(&processed_args, ":help")) {
-    optional<vector<string>> arg_value = get_value_for_key(&processed_args, ":help");
+  if(is_key_in_vector(&processed_arguments, ":help")) {
+    optional<vector<string>> arg_value = get_value_for_key(&processed_arguments, ":help");
     if(!arg_value.has_value()) {
-      showHelp();
+      show_help();
       return 0;
     }
 
-    showHelpForCommand(arg_value.value().at(0));
+    show_help_for_command(arg_value.value().at(0));
   }
 
   return 0;

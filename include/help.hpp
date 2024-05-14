@@ -1,8 +1,8 @@
 #ifndef HELP_HPP
 #define HELP_HPP
 
-void showHelp();
+void show_help();
 
-void showHelpForCommand(const std::string& command);
+void show_help_for_command(const std::string& command);
 
 #endif

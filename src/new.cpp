@@ -24,24 +24,25 @@ void create_and_write_file(const std::filesystem::path& path, const string& data
 }
 
 int create_project(const string& name, const std::filesystem::path& cwd, bool is_quiet) {
-  std::filesystem::path project_path = cwd / name;
-  if(!is_quiet) std::cout << "  \033[92;1mCreating\033[0m \"" << name << "\" (C++ project) at " << project_path << std::endl;
+  std::filesystem::path root_folder_name = cwd / name;
+  if(!is_quiet) std::cout << "  \033[92;1mCreating\033[0m \"" << name << "\" (C++ project) at " << root_folder_name << std::endl;
   
-  if(std::filesystem::exists(project_path)) {
-    std::cerr << "  \033[91;1mSystem error\033[0m: folder " << project_path << " already exists" << std::endl;
+  if(std::filesystem::exists(root_folder_name)) {
+    std::cerr << "  \033[91;1mSystem error\033[0m: folder " << root_folder_name << " already exists" << std::endl;
     return 1;
   }
 
-  if(!std::filesystem::create_directories(project_path / "src")) {
-    std::cerr << "  \033[91;1mSystem error\033[0m: folders for project " << project_path << " cannot be created" << std::endl;
+  const bool directory_creation_success = std::filesystem::create_directories(root_folder_name / "src");
+  if(!directory_creation_success) {
+    std::cerr << "  \033[91;1mSystem error\033[0m: folders for project " << root_folder_name << " cannot be created" << std::endl;
     return 1;
   }
 
-  string ccreate_toml = "[project]\nname = \"" + name + "\"\nversion = \"1.0.0\"\nlang = \"cpp\"\ncompiler = \"g++\"\ncompiler_flags = \"-Wall\"\n\n";
-  create_and_write_file(project_path / "TSMMake.toml", ccreate_toml);
+  string config_as_toml = "[project]\nname = \"" + name + "\"\nversion = \"1.0.0\"\nlang = \"cpp\"\ncompiler = \"g++\"\ncompiler_flags = \"-Wall\"\n\n";
+  create_and_write_file(root_folder_name / "TSMMake.toml", config_as_toml);
 
   string main_cpp = "#include<iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}\n";
-  create_and_write_file(project_path / "src/main.cpp", main_cpp);
+  create_and_write_file(root_folder_name / "src/main.cpp", main_cpp);
 
   return 0;
 }

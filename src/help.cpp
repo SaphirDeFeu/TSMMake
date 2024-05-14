@@ -5,7 +5,7 @@
 
 using std::string;
 
-void showHelp() {
+void show_help() {
   std::cout << "TSMMake, a C/C++ Package manager and build tool                     by \033[92;1mTSMStudios\033[0m\n" << std::endl;
   std::cout << "Usage: tsmmake <command> [options]\n" << std::endl;
   std::cout << "Options:" << std::endl;
@@ -21,7 +21,7 @@ void showHelp() {
   return;
 };
 
-void showHelpForCommand(const string& command) {
+void show_help_for_command(const string& command) {
   if(command == string("run")) {
     std::cout << "Usage: tsmmake run [options] -- [program_args]\n" << std::endl;
     std::cout << "Builds and runs the current TSMMake project" << std::endl;
