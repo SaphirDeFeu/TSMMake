@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Set up build files"
 
 if [ -d "./target" ]; then
