@@ -26,9 +26,9 @@ Use `tsmmake new <project_name>` and TSMMake will create a new directory named `
 
 ## Configurating
 
-By default, TSMMake will create a `TSMMake.toml` file in the root directory of the project, with default fields.
+TSMMake will create a `TSMMake.toml` file in the root directory of the project, with default fields.
 
-The file looks like this upon project initialization :
+By default, the file looks like this upon project initialization :
 
 ```toml
 [project]
@@ -39,7 +39,11 @@ compiler = "g++"
 compiler_flags = "-Wall"
 ```
 
-As such will be configured a default compiler `g++` and includes compiler flags which can be tweaked to your desires.
+As such will be configured a default compiler `g++` and includes compiler flags which can be tweaked to your desires.  
+  
+You can modify the default fields by specifying them in a `default.toml` file in the same folder as where you installed the tsmmake binary.  
+For example, if the compiled binary is located at `/usr/local/bin/tsmmake/tsmmake.bin` : this means that you can add a default.toml file at `/usr/local/bin/tsmmake/default.toml` and it'll be picked up by the binary upon project creation.  
+This can allow you to create new `TSMMake` for C quickly and easily.
 
 ## Building and running
 
