@@ -5,6 +5,7 @@
 #include<fstream>
 #include<optional>
 #include"parser/mod.hpp"
+#include"platform.hpp"
 
 #include"build/mod.hpp"
 
@@ -79,7 +80,7 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
 
   const bool is_build_directory_present = std::filesystem::exists(cwd / "build");
   if(!is_build_directory_present) {
-    const bool create_build_directories_success = std::filesystem::create_directories(cwd / "build/src");
+    const bool create_build_directories_success = std::filesystem::create_directories(cwd / "build" / "src");
     if(!create_build_directories_success) {
       std::cerr << "  \033[91;1mSystem error\033[0m: build directory cannot be created" << std::endl;
       return 1;
@@ -97,7 +98,7 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
     const string string_to_replace = "src";
     const size_t position_index = object_file_path.find(string_to_replace);
 
-    object_file_path.replace(position_index, string_to_replace.length(), "build/src");
+    object_file_path.replace(position_index, string_to_replace.length(), "build" + PATH_SEPARATOR + "src");
     source_object_filepaths.push_back(object_file_path);
 
     create_folders_for_path(object_file_path);
@@ -117,7 +118,7 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
     command += " " + path;
   }
 
-  const vector<string> dependency_files = scan_dir((cwd / "build/include").string());
+  const vector<string> dependency_files = scan_dir((cwd / "build" / "include").string());
 
   for(const string& path : dependency_files) {
     command += " " + path;
@@ -170,7 +171,7 @@ int build_dependencies(const std::filesystem::path& cwd, bool is_quiet) {
     string toReplace = "include";
     size_t pos = obj_path.find(toReplace);
 
-    obj_path.replace(pos, toReplace.length(), "build/include");
+    obj_path.replace(pos, toReplace.length(), "build" + PATH_SEPARATOR + "include");
     object_files.push_back(obj_path);
 
     create_folders_for_path(obj_path);
