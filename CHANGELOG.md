@@ -1,4 +1,4 @@
-# Plans for the future
+# Plans for upcoming releases
 
 ## Features for 1.0.0
 
@@ -6,5 +6,7 @@
 - Installation management :
   - shell/powershell command to be run
   - self-contained zip package
-  - msi/deb installers (not worth it)
+
+## Features for 1.1.0
+
 - Support for MSVC's `cl` compiler
