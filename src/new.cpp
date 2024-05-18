@@ -12,7 +12,7 @@ using std::ofstream;
 
 string get_default_config_path(const std::filesystem::path& exec_path) {
   const std::filesystem::path directory = exec_path.parent_path();
-  return string(directory / "default.toml");
+  return (directory / "default.toml").string();
 }
 
 void create_and_write_file(const std::filesystem::path& path, const string& data) {
