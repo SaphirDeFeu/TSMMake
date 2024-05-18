@@ -1,6 +1,10 @@
 #ifndef CONFIG_TOML_PARSER
 #define CONFIG_TOML_PARSER
 
+#include<string>
+#include<optional>
+#include<filesystem>
+
 namespace TOML {
   typedef struct ProjectConfiguration {
     std::string name;

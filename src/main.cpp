@@ -4,6 +4,7 @@
 #include<string>
 #include<filesystem>
 
+#include"platform.hpp"
 #include"new.hpp"
 #include"help.hpp"
 #include"build/mod.hpp"

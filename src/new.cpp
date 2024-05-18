@@ -2,11 +2,18 @@
 #include<filesystem>
 #include<string>
 #include<fstream>
+#include"platform.hpp"
+#include"parser/mod.hpp"
 
 #include"new.hpp"
 
 using std::string;
 using std::ofstream;
+
+string get_default_config_path(const std::filesystem::path& exec_path) {
+  const std::filesystem::path directory = exec_path.parent_path();
+  return directory / "default.toml";
+}
 
 void create_and_write_file(const std::filesystem::path& path, const string& data) {
 
@@ -24,8 +31,23 @@ void create_and_write_file(const std::filesystem::path& path, const string& data
 }
 
 int create_project(const string& name, const std::filesystem::path& cwd, bool is_quiet) {
+  const std::filesystem::path EXEC_PATH(get_exec_path());
+
+  const std::optional<TOML::Configuration> PARSE_RES = TOML::parse(get_default_config_path(EXEC_PATH));
+  string config_as_toml = "[project]\nname = \"" + name + "\"\nversion = \"1.0.0\"\n";
+  string lang = "C++";
+
+  if(!PARSE_RES.has_value()) {
+    config_as_toml += "lang = \"cpp\"\ncompiler = \"g++\"\ncompiler_flags = \"-Wall\"\n\n";
+  } else {
+    const TOML::Configuration DEFAULT_CONFIG = PARSE_RES.value();
+    config_as_toml += "lang = \"" + DEFAULT_CONFIG.project.lang + "\"\ncompiler = \"" + DEFAULT_CONFIG.project.compiler + "\"\ncompiler_flags = \"" + DEFAULT_CONFIG.project.flags + "\"\n\n";
+  
+    if(DEFAULT_CONFIG.project.lang == "c") lang = "C";
+  }
+
   std::filesystem::path root_folder_name = cwd / name;
-  if(!is_quiet) std::cout << "  \033[92;1mCreating\033[0m \"" << name << "\" (C++ project) at " << root_folder_name << std::endl;
+  if(!is_quiet) std::cout << "  \033[92;1mCreating\033[0m \"" << name << "\" (" + lang + " project) at " << root_folder_name << std::endl;
   
   if(std::filesystem::exists(root_folder_name)) {
     std::cerr << "  \033[91;1mSystem error\033[0m: folder " << root_folder_name << " already exists" << std::endl;
@@ -38,11 +60,16 @@ int create_project(const string& name, const std::filesystem::path& cwd, bool is
     return 1;
   }
 
-  string config_as_toml = "[project]\nname = \"" + name + "\"\nversion = \"1.0.0\"\nlang = \"cpp\"\ncompiler = \"g++\"\ncompiler_flags = \"-Wall\"\n\n";
   create_and_write_file(root_folder_name / "TSMMake.toml", config_as_toml);
 
-  string main_cpp = "#include<iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}\n";
-  create_and_write_file(root_folder_name / "src/main.cpp", main_cpp);
+  string src_main = "#include<iostream>\n\nint main() {\n    std::cout << \"Hello, World!\" << std::endl;\n    return 0;\n}\n";
+  string file_name = "main.cpp";
+  if(lang == "C") {
+    src_main = "#include<stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    return 0;\n}\n";
+    file_name = "main.c";
+  }
+
+  create_and_write_file(root_folder_name / "src" / file_name, src_main);
 
   return 0;
 }
