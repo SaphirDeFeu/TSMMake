@@ -1,8 +1,11 @@
 #include<string>
 
+#ifndef PLATFORM_DEPENDENT_CODE
+#define PLATFORM_DEPENDENT_CODE
+
 #ifdef _WIN32
 
-std::string PATH_SEPARATOR = "\\";
+const std::string PATH_SEPARATOR = "\\";
 
 std::string get_exec_path();
 
@@ -10,8 +13,10 @@ std::string get_exec_path();
 
 #ifdef __linux__
 
-std::string PATH_SEPARATOR = "/";
+const std::string PATH_SEPARATOR = "/";
 
 std::string get_exec_path();
+
+#endif
 
 #endif
