@@ -11,5 +11,6 @@ main: src/**
 	$(CXX) $(CXXFLAGS) -c src/parser/mod.cpp -o target/obj/parser/mod.o -Iinclude
 	$(CXX) $(CXXFLAGS) -o target/tsmmake target/obj/main.o target/obj/new.o target/obj/build/mod.o target/obj/build/run.o target/obj/help.o target/obj/parser/mod.o target/obj/platform.o
 
-run: target/tsmmake
-	cd dev && ../target/tsmmake run
+test: ./target/tsmmake
+	$(CXX) $(CXXFLAGS) tests/main.cpp -o tests/main
+	./tests/main
