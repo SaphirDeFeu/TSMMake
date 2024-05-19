@@ -1,4 +1,3 @@
-#include<string>
 
 #ifndef PLATFORM_DEPENDENT_CODE
 #define PLATFORM_DEPENDENT_CODE
