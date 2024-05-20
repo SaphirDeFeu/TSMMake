@@ -11,8 +11,6 @@
 
 using std::string;
 using std::vector;
-using std::ifstream;
-using std::ofstream;
 using std::optional;
 
 void delete_carriage_returns(string* text) {
@@ -118,7 +116,8 @@ int build_project(const std::filesystem::path& cwd, bool is_quiet) {
     command += " " + path;
   }
 
-  const vector<string> dependency_files = scan_dir((cwd / "build" / "include").string());
+  vector<string> dependency_files;
+  if(std::filesystem::exists(cwd / "build" / "include")) dependency_files = scan_dir((cwd / "build" / "include").string());
 
   for(const string& path : dependency_files) {
     command += " " + path;
@@ -151,7 +150,14 @@ int build_dependencies(const std::filesystem::path& cwd, bool is_quiet) {
     return 1;
   };
 
-  vector<string> source_files = scan_dir((cwd / "include").string());
+  vector<string> source_files;
+  if(std::filesystem::exists(cwd / "include")) {
+    source_files = scan_dir((cwd / "include").string());
+  } else {
+    std::cerr << "  \033[91;1mFilesystem error\033[0m: folder " << cwd / "include" << " does not exist, cannot build dependencies." << std::endl;
+    return 1;
+  }
+
   vector<string> object_files;
   for(const string& path : source_files) {
 
