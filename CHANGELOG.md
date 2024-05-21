@@ -3,7 +3,8 @@
 ## Features for 1.0.0
 
 - Default config for all projects upon creation
-- Installation management :
+- Installation and dependency management
+- Installing :
   - shell/powershell command to be run
   - self-contained zip package
 
