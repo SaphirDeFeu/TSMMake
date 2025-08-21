@@ -1,3 +1,8 @@
+# Maintenance notice
+This program is no longer maintained but I have decided not to archive the repository.
+If you still wish to open issues or pull requests, that's fine, although I most likely won't respond to them.
+The last version (and commit) on the main branch most likely works enough for basic Cxx development, although I haven't tested anything.
+
 # TSMMake
 
 # A TSM Studios production
